@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yalarm/alarmsProvider.dart';
 import 'createAlarm.dart';
+import 'Alarms.dart';
 
 void main() => runApp(ChangeNotifierProvider(
     builder: (context) => AlarmsProvider(), child: MyApp()));
@@ -56,26 +57,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Consumer<AlarmsProvider>(
       builder: (context, alarmsProviderItem, _) {
-        List<String> localAlarms = alarmsProviderItem.alarms;
-        localAlarms.forEach((item) {
-          allWidgetsAlarms.add(
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(item),
-            ),
-          );
-        });
+        List<YAlarms> localAlarms = alarmsProviderItem.alarms;
+        if (localAlarms != null) {
+          localAlarms.forEach((item) {
+            allWidgetsAlarms.add(
+              InkWell(
+                child: Container(
+                  padding: const EdgeInsets.only(
+                      left: 10.0, top: 16.0, bottom: 16.0, right: 0.0),
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.grey))),
+                  child: Text(item.title, style: TextStyle(fontSize: 16),),
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CreateAlarm(item: item)));
+                },
+              ),
+            );
+          });
+        }
+
         return Scaffold(
           appBar: AppBar(
             title: Text(widget.title),
           ),
-          body: Center(
-              child: ListView.builder(
-            itemCount: allWidgetsAlarms.length,
-            padding: const EdgeInsets.all(8.0),
-            itemBuilder: (BuildContext ctxt, int index) =>
-                allWidgetsAlarms[index],
-          )),
+          body: Container(
+            child: Center(
+                child: ListView.builder(
+              itemCount: allWidgetsAlarms.length,
+              padding: const EdgeInsets.only(left: 0.0),
+              itemBuilder: (BuildContext ctxt, int index) =>
+                  allWidgetsAlarms[index],
+            )),
+          ),
           floatingActionButton: FloatingActionButton(
             onPressed: _addAlarm,
             tooltip: 'Increment',
