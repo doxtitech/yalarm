@@ -29,8 +29,11 @@ class _CreateAlarmState extends State<CreateAlarm> {
     if (widget.item != null && widget.item.title != null) {
       alarmController = new TextEditingController(text: widget.item.title);
       alarmTime = widget.item.time;
-      selectedTime =
-          '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
+      if (alarmTime != null) {
+        selectedTime =
+            '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
+      }
+
       onlyOnce = widget.item.runOnlyOnce;
     }
     if (widget.item != null) {
@@ -72,7 +75,6 @@ class _CreateAlarmState extends State<CreateAlarm> {
                             ),
                             onPressed: () {
                               alarmsProviderItemLink.removeAlarm(alarmName);
-                              // Navigator.of(context).pop();
                               Navigator.pop(context);
                               Navigator.pop(context);
                             },
@@ -115,9 +117,12 @@ class _CreateAlarmState extends State<CreateAlarm> {
                           date.timeZoneOffset.inHours.toString());
                       setState(() {
                         alarmTime = date;
-                        selectedTime =
-                            '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
-                        print('Time is ${alarmTime.hour}');
+                        if (alarmTime != null) {
+                          selectedTime =
+                              '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
+                        }
+
+                        // print('Time is ${alarmTime.hour}');
                       });
                     }, onConfirm: (date) {
                       print('confirm $date');
@@ -174,9 +179,15 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   newAlarm.title = alarmName;
                   newAlarm.time = alarmTime;
                   newAlarm.runOnlyOnce = onlyOnce;
+                  if (widget.item != null) {
+                    YAlarms oldAlarm = widget.item;
+                    Provider.of<AlarmsProvider>(context, listen: false)
+                        .updateAlarm(oldAlarm, newAlarm);
+                  } else {
+                    Provider.of<AlarmsProvider>(context, listen: false)
+                        .addAlarm(newAlarm);
+                  }
 
-                  Provider.of<AlarmsProvider>(context, listen: false)
-                      .addAlarm(newAlarm);
                   Navigator.pop(context);
                 }),
           ),

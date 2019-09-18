@@ -1,3 +1,4 @@
+import 'package:day_selector/day_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,12 @@ class AlarmsProvider with ChangeNotifier {
     if (alarms == null) {
       alarms = [];
     }
+    if (alarm.title == '') {
+      alarm.title = 'No name';
+    }
+    if (alarm.daySelector == null) {
+      alarm.daySelector = new DaySelector();
+    }
     alarms.add(alarm);
     notifyListeners();
     updateLocalStorage();
@@ -23,6 +30,8 @@ class AlarmsProvider with ChangeNotifier {
     alarms.forEach((item) {
       if (item.title == oldAlarm.title) {
         alarms[i].title = newAlarm.title;
+        alarms[i].daySelector = newAlarm.daySelector;
+        alarms[i].runOnlyOnce = newAlarm.runOnlyOnce;
       }
       i++;
     });
@@ -31,13 +40,16 @@ class AlarmsProvider with ChangeNotifier {
   }
 
   void removeAlarm(String alarmName) {
+    YAlarms alarmToRemove;
     alarms.forEach((item) {
       if (item.title == alarmName) {
-        alarms.remove(item);
+        alarmToRemove = item;
       }
     });
-    notifyListeners();
+    alarms.remove(alarmToRemove);
+
     updateLocalStorage();
+    notifyListeners();
   }
 
   void updateLocalStorage() async {
@@ -64,14 +76,17 @@ class AlarmsProvider with ChangeNotifier {
     String tempGet = '';
     List jSonAlarms = [];
     tempGet = prefs.getString('allAlarms');
-    jSonAlarms = jsonDecode(tempGet);
-    jSonAlarms.forEach((item) {
-      YAlarms tempAlarm = new YAlarms();
-      tempAlarm.title = item['title'];
-      tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true' ? true : false;
-      tempAlarm.time = DateTime.parse(item['time']);
-      alarms.add(tempAlarm);
-    });
-    notifyListeners();
+    if (tempGet != null) {
+      jSonAlarms = jsonDecode(tempGet);
+      jSonAlarms.forEach((item) {
+        YAlarms tempAlarm = new YAlarms();
+        tempAlarm.title = item['title'];
+        tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true' ? true : false;
+        tempAlarm.time =
+            item['time'] != 'null' ? DateTime.parse(item['time']) : null;
+        alarms.add(tempAlarm);
+      });
+      notifyListeners();
+    }
   }
 }
