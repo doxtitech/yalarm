@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:yalarm/Alarms.dart';
 import 'alarmsProvider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:day_selector/day_selector.dart';
+import 'yAlarmDayPicker.dart';
 
 class CreateAlarm extends StatefulWidget {
   YAlarms item;
@@ -141,13 +141,8 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   ),
                 )
               ]),
-              DaySelector(
-                  value: null,
-                  onChange: (value) {
-                    print(DaySelector.monday == value);
-                  },
-                  color: Colors.white,
-                  mode: DaySelector.modeFull),
+              // custom day selector here
+              YADayPicker(),
               Row(children: [
                 new Switch(
                   value: onlyOnce,
