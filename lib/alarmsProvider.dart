@@ -1,6 +1,4 @@
-import 'package:day_selector/day_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Alarms.dart';
 import 'dart:convert';
@@ -18,7 +16,7 @@ class AlarmsProvider with ChangeNotifier {
       alarm.title = 'No name';
     }
     if (alarm.daySelector == null) {
-      alarm.daySelector = new DaySelector();
+      alarm.daySelector = [0,0,0,0,0,0,0];
     }
     alarms.add(alarm);
     notifyListeners();

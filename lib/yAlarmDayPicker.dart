@@ -19,16 +19,30 @@ class YADayPickerState extends State<YADayPicker> {
         widget.selectedDays != null && widget.selectedDays.length > 0
             ? widget.selectedDays
             : [0, 0, 0, 0, 0, 0, 0];
+  }
+
+  @override
+  Widget build(BuildContext context) {
     int i = 0;
+    _daysOfWeekWidgets = [];
     _selectedDays.forEach((item) {
+      int z = i;
       _daysOfWeekWidgets.add(Column(
         children: <Widget>[
           Text(_dayOfWeek[i]),
           Checkbox(
-            value: _selectedDays[i] == 0 ? false : true,
+            value: _selectedDays[i] != 0,
             onChanged: (bool value) {
+              List<int> tempSelectedDays = [];
+              for (int y = 0; y < _selectedDays.length; y++) {
+                if (y == z) {
+                  tempSelectedDays.add(value == true ? 1 : 0);
+                } else {
+                  tempSelectedDays.add(_selectedDays[y]);
+                }
+              }
               setState(() {
-                _selectedDays[i] = value == true ? 0 : 1;
+                _selectedDays = tempSelectedDays;
               });
             },
           )
@@ -36,10 +50,6 @@ class YADayPickerState extends State<YADayPicker> {
       ));
       i++;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
       padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
