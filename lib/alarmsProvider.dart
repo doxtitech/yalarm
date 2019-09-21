@@ -16,7 +16,7 @@ class AlarmsProvider with ChangeNotifier {
       alarm.title = 'No name';
     }
     if (alarm.daySelector == null) {
-      alarm.daySelector = [0,0,0,0,0,0,0];
+      alarm.daySelector = [0, 0, 0, 0, 0, 0, 0];
     }
     alarms.add(alarm);
     notifyListeners();
@@ -57,7 +57,7 @@ class AlarmsProvider with ChangeNotifier {
     alarms.forEach((item) {
       var customJson = {
         'title': item.title,
-        'daySelecter': item.daySelector.toString(),
+        'daySelector': item.daySelector.toString(),
         'time': item.time.toString(),
         'runOnlyOnce': item.runOnlyOnce.toString(),
       };
@@ -67,6 +67,17 @@ class AlarmsProvider with ChangeNotifier {
     print(jsonEncode(tempSave));
     prefs.setString('allAlarms', tempSave);
     notifyListeners();
+  }
+
+  List<int> getListOfIntegersFromListOfStrings(listOfStrings) {
+    List<int> tempList = [];
+    if(listOfStrings==null){
+      return [];
+    }
+    listOfStrings.forEach((item) {
+      tempList.add(item);
+    });
+    return tempList;
   }
 
   void getLocalStorage() async {
@@ -79,7 +90,12 @@ class AlarmsProvider with ChangeNotifier {
       jSonAlarms.forEach((item) {
         YAlarms tempAlarm = new YAlarms();
         tempAlarm.title = item['title'];
-        tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true' ? true : false;
+        tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
+        print(jsonDecode(item['daySelector']));
+        List<int> tempDaySelector =
+            getListOfIntegersFromListOfStrings(jsonDecode(item['daySelector']));
+        tempAlarm.daySelector = tempDaySelector;
+
         tempAlarm.time =
             item['time'] != 'null' ? DateTime.parse(item['time']) : null;
         alarms.add(tempAlarm);

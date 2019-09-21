@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class YADayPicker extends StatefulWidget {
   // [0,0,1,0,0,0,1] - 1 for selected day, 0 for unselected
   List<int> selectedDays = [];
-  YADayPicker({Key key, this.selectedDays}) : super(key: key);
+  var getDayPickerDays;
+  YADayPicker({Key key, this.selectedDays, this.getDayPickerDays})
+      : super(key: key);
   YADayPickerState createState() => YADayPickerState();
 }
 
@@ -19,6 +21,10 @@ class YADayPickerState extends State<YADayPicker> {
         widget.selectedDays != null && widget.selectedDays.length > 0
             ? widget.selectedDays
             : [0, 0, 0, 0, 0, 0, 0];
+  }
+
+  List<int> getDayPickerDays(widgetDays) {
+    return widget.getDayPickerDays(widgetDays);
   }
 
   @override
@@ -44,6 +50,7 @@ class YADayPickerState extends State<YADayPicker> {
               setState(() {
                 _selectedDays = tempSelectedDays;
               });
+              getDayPickerDays(_selectedDays);
             },
           )
         ],

@@ -19,6 +19,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
   bool onlyOnce = false;
   String _dynamicText = 'Add Alarm';
   TextEditingController alarmController;
+  List<int> selectedDaysOfWeek = [0, 0, 0, 0, 0, 0, 0];
   @override
   void initState() {
     // TODO: implement initState
@@ -26,6 +27,9 @@ class _CreateAlarmState extends State<CreateAlarm> {
     alarmName = widget.item != null && widget.item.title != null
         ? widget.item.title
         : '';
+    selectedDaysOfWeek = widget.item != null && widget.item.daySelector != null
+        ? widget.item.daySelector
+        : selectedDaysOfWeek;
     if (widget.item != null && widget.item.title != null) {
       alarmController = new TextEditingController(text: widget.item.title);
       alarmTime = widget.item.time;
@@ -39,6 +43,10 @@ class _CreateAlarmState extends State<CreateAlarm> {
     if (widget.item != null) {
       _dynamicText = 'Update Alarm';
     }
+  }
+
+  List<int> getDays(widgetDays) {
+    selectedDaysOfWeek = widgetDays;
   }
 
   @override
@@ -142,7 +150,10 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 )
               ]),
               // custom day selector here
-              YADayPicker(),
+              YADayPicker(
+                selectedDays: selectedDaysOfWeek,
+                getDayPickerDays: getDays,
+              ),
               Row(children: [
                 new Switch(
                   value: onlyOnce,
@@ -174,6 +185,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   newAlarm.title = alarmName;
                   newAlarm.time = alarmTime;
                   newAlarm.runOnlyOnce = onlyOnce;
+                  newAlarm.daySelector = selectedDaysOfWeek;
                   if (widget.item != null) {
                     YAlarms oldAlarm = widget.item;
                     Provider.of<AlarmsProvider>(context, listen: false)
