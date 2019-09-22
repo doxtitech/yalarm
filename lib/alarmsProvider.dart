@@ -81,11 +81,10 @@ class AlarmsProvider with ChangeNotifier {
         YAlarms tempAlarm = new YAlarms();
         tempAlarm.title = item['title'];
         tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
-        List<dynamic> tempDaySelectorPrequel =jsonDecode(item['daySelector']);
-        List<int> tempDaySelector =
-            tempDaySelectorPrequel.map((item){
-              return item is int ? item: int.parse(item);
-            }).toList();
+        List<dynamic> tempDaySelectorPrequel = jsonDecode(item['daySelector']);
+        List<int> tempDaySelector = tempDaySelectorPrequel.map((item) {
+          return item is int ? item : int.parse(item);
+        }).toList();
         tempAlarm.daySelector = tempDaySelector;
 
         tempAlarm.time =
