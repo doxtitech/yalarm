@@ -29,6 +29,7 @@ class AlarmsProvider with ChangeNotifier {
       if (item.title == oldAlarm.title) {
         alarms[i].title = newAlarm.title;
         alarms[i].daySelector = newAlarm.daySelector;
+        alarms[i].time = newAlarm.time;
         alarms[i].runOnlyOnce = newAlarm.runOnlyOnce;
       }
       i++;
@@ -69,17 +70,6 @@ class AlarmsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> getListOfIntegersFromListOfStrings(listOfStrings) {
-    List<int> tempList = [];
-    if(listOfStrings==null){
-      return [];
-    }
-    listOfStrings.forEach((item) {
-      tempList.add(item);
-    });
-    return tempList;
-  }
-
   void getLocalStorage() async {
     prefs = await SharedPreferences.getInstance();
     String tempGet = '';
@@ -91,9 +81,10 @@ class AlarmsProvider with ChangeNotifier {
         YAlarms tempAlarm = new YAlarms();
         tempAlarm.title = item['title'];
         tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
-        print(jsonDecode(item['daySelector']));
-        List<int> tempDaySelector =
-            getListOfIntegersFromListOfStrings(jsonDecode(item['daySelector']));
+        List<dynamic> tempDaySelectorPrequel = jsonDecode(item['daySelector']);
+        List<int> tempDaySelector = tempDaySelectorPrequel.map((item) {
+          return item is int ? item : int.parse(item);
+        }).toList();
         tempAlarm.daySelector = tempDaySelector;
 
         tempAlarm.time =
