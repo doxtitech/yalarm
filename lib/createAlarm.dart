@@ -16,7 +16,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
   String alarmName;
   String selectedTime = '';
   DateTime alarmTime;
-  bool onlyOnce = false;
+  bool onlyOnce = true;
   String _dynamicText = 'Add Alarm';
   TextEditingController alarmController;
   List<int> selectedDaysOfWeek = [0, 0, 0, 0, 0, 0, 0];
@@ -150,10 +150,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 )
               ]),
               // custom day selector here
-              YADayPicker(
-                selectedDays: selectedDaysOfWeek,
-                getDayPickerDays: getDays,
-              ),
+              
               Row(children: [
                 new Switch(
                   value: onlyOnce,
@@ -166,6 +163,10 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 ),
                 Text('Run Only once')
               ]),
+              onlyOnce == false ? YADayPicker(
+                selectedDays: selectedDaysOfWeek,
+                getDayPickerDays: getDays,
+              ):Container(),
             ],
           ),
         ),
