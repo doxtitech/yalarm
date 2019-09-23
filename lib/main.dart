@@ -32,15 +32,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //
   void _addAlarm() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => CreateAlarm()));
-    // setState(() {
-    // Provider.of<AlarmsProvider>(context, listen: false).addAlarm('test2');
-    // Provider.of<AlarmsProvider>(context, listen: false).updateAlarm('test1','test+++-1');
-    // Provider.of<AlarmsProvider>(context, listen: false).removeAlarm('test3');
-    // });
   }
 
   @override
@@ -57,8 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Consumer<AlarmsProvider>(
       builder: (context, alarmsProviderItem, _) {
         List<YAlarms> localAlarms = alarmsProviderItem.alarms;
-        if (localAlarms != null) {
+        if (localAlarms.length != 0) {
           localAlarms.forEach((item) {
+            if (item == null) {
+              allWidgetsAlarms = [];
+              return;
+            }
             allWidgetsAlarms.add(
               InkWell(
                 child: Container(
@@ -66,7 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       left: 10.0, top: 16.0, bottom: 16.0, right: 0.0),
                   decoration: BoxDecoration(
                       border: Border(bottom: BorderSide(color: Colors.grey))),
-                  child: Text(item.title, style: TextStyle(fontSize: 16),),
+                  child: Text(
+                    item.title,
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
                 onTap: () {
                   Navigator.push(
@@ -77,6 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           });
+        } else {
+          allWidgetsAlarms = [];
         }
 
         return Scaffold(

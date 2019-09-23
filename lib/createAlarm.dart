@@ -13,6 +13,7 @@ class CreateAlarm extends StatefulWidget {
 }
 
 class _CreateAlarmState extends State<CreateAlarm> {
+  int alarmID;
   String alarmName;
   String selectedTime = '';
   DateTime alarmTime;
@@ -24,14 +25,14 @@ class _CreateAlarmState extends State<CreateAlarm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    alarmName = widget.item != null && widget.item.title != null
-        ? widget.item.title
-        : '';
+    alarmID =
+        widget.item != null && widget.item.id != null ? widget.item.id : 0;
     selectedDaysOfWeek = widget.item != null && widget.item.daySelector != null
         ? widget.item.daySelector
         : selectedDaysOfWeek;
     if (widget.item != null && widget.item.title != null) {
-      alarmController = new TextEditingController(text: widget.item.title);
+      alarmName = widget.item.title;
+      alarmController = new TextEditingController(text: alarmName);
       alarmTime = widget.item.time;
       if (alarmTime != null) {
         selectedTime =
@@ -39,6 +40,8 @@ class _CreateAlarmState extends State<CreateAlarm> {
       }
 
       onlyOnce = widget.item.runOnlyOnce;
+    } else {
+      alarmController = new TextEditingController();
     }
     if (widget.item != null) {
       _dynamicText = 'Update Alarm';
@@ -57,49 +60,51 @@ class _CreateAlarmState extends State<CreateAlarm> {
         appBar: AppBar(
           title: Text(_dynamicText),
           actions: [
-            Padding(
-              padding: EdgeInsets.all(15.0),
-              child: InkWell(
-                child: Icon(Icons.delete),
-                onTap: () {
-                  return showDialog<void>(
-                    context: context,
-                    barrierDismissible: false, // user must tap button!
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Remove Alarm?'),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text('The alarm will be removed for ever!'),
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          FlatButton(
-                            child: Text(
-                              'Remove',
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                            onPressed: () {
-                              alarmsProviderItemLink.removeAlarm(alarmName);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          FlatButton(
-                            child: Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            )
+            widget.item != null
+                ? Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: InkWell(
+                      child: Icon(Icons.delete),
+                      onTap: () {
+                        return showDialog<void>(
+                          context: context,
+                          barrierDismissible: false, // user must tap button!
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Remove Alarm?'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: <Widget>[
+                                    Text('The alarm will be removed for ever!'),
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text(
+                                    'Remove',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                  onPressed: () {
+                                    alarmsProviderItemLink.removeAlarm(alarmID);
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                FlatButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  )
+                : Container()
           ],
         ),
         body: Container(
@@ -150,7 +155,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 )
               ]),
               // custom day selector here
-              
+
               Row(children: [
                 new Switch(
                   value: onlyOnce,
@@ -163,10 +168,12 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 ),
                 Text('Run Only once')
               ]),
-              onlyOnce == false ? YADayPicker(
-                selectedDays: selectedDaysOfWeek,
-                getDayPickerDays: getDays,
-              ):Container(),
+              onlyOnce == false
+                  ? YADayPicker(
+                      selectedDays: selectedDaysOfWeek,
+                      getDayPickerDays: getDays,
+                    )
+                  : Container(),
             ],
           ),
         ),
@@ -182,7 +189,9 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   textAlign: TextAlign.center,
                 ),
                 onPressed: () {
+                  alarmName = alarmController.text;
                   YAlarms newAlarm = new YAlarms();
+                  newAlarm.id = alarmID;
                   newAlarm.title = alarmName;
                   newAlarm.time = alarmTime;
                   newAlarm.runOnlyOnce = onlyOnce;

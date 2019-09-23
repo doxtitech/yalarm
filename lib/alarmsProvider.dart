@@ -12,12 +12,15 @@ class AlarmsProvider with ChangeNotifier {
     if (alarms == null) {
       alarms = [];
     }
-    if (alarm.title == '') {
+    if (alarm.title == null || alarm.title == '') {
       alarm.title = 'No name';
     }
     if (alarm.daySelector == null) {
       alarm.daySelector = [0, 0, 0, 0, 0, 0, 0];
     }
+    int lastID = alarms.length != 0 ? alarms[alarms.length - 1].id : 0;
+    alarm.id = alarms.length != 0 ? lastID + 1 : 1;
+
     alarms.add(alarm);
     notifyListeners();
     updateLocalStorage();
@@ -26,7 +29,8 @@ class AlarmsProvider with ChangeNotifier {
   void updateAlarm(YAlarms oldAlarm, YAlarms newAlarm) {
     int i = 0;
     alarms.forEach((item) {
-      if (item.title == oldAlarm.title) {
+      if (item.id == oldAlarm.id) {
+        alarms[i].id = newAlarm.id;
         alarms[i].title = newAlarm.title;
         alarms[i].daySelector = newAlarm.daySelector;
         alarms[i].time = newAlarm.time;
@@ -38,10 +42,10 @@ class AlarmsProvider with ChangeNotifier {
     updateLocalStorage();
   }
 
-  void removeAlarm(String alarmName) {
+  void removeAlarm(int alarmID) {
     YAlarms alarmToRemove;
     alarms.forEach((item) {
-      if (item.title == alarmName) {
+      if (item.id == alarmID) {
         alarmToRemove = item;
       }
     });
@@ -57,6 +61,7 @@ class AlarmsProvider with ChangeNotifier {
     List jSonAlarms = [];
     alarms.forEach((item) {
       var customJson = {
+        'id': item.id,
         'title': item.title,
         'daySelector': item.daySelector.toString(),
         'time': item.time.toString(),
@@ -79,6 +84,7 @@ class AlarmsProvider with ChangeNotifier {
       jSonAlarms = jsonDecode(tempGet);
       jSonAlarms.forEach((item) {
         YAlarms tempAlarm = new YAlarms();
+        tempAlarm.id = item['id'];
         tempAlarm.title = item['title'];
         tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
         List<dynamic> tempDaySelectorPrequel = jsonDecode(item['daySelector']);
