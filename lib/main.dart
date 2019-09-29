@@ -62,39 +62,49 @@ class _MyHomePageState extends State<MyHomePage> {
             allWidgetsAlarms.add(
               Builder(
                 builder: (BuildContext context) {
-                  return Dismissible(
-                    key: Key(item.id.toString()),
-                    child: InkWell(
-                      child: Container(
-                        width: screenWidth,
-                        padding: const EdgeInsets.only(
-                            left: 10.0, top: 16.0, bottom: 16.0, right: 0.0),
-                        decoration: BoxDecoration(
-                            border:
-                                Border(bottom: BorderSide(color: Colors.grey))),
-                        child: Text(
-                          item.title,
-                          style: TextStyle(fontSize: 16),
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Dismissible(
+                        key: Key(item.id.toString()),
+                        child: InkWell(
+                          child: Container(
+                            width: screenWidth,
+                            padding: const EdgeInsets.only(
+                                left: 10.0,
+                                top: 16.0,
+                                bottom: 16.0,
+                                right: 0.0),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(color: Colors.grey))),
+                            child: Text(
+                              item.title,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        CreateAlarm(item: item)));
+                          },
                         ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CreateAlarm(item: item)));
-                      },
-                    ),
-                    background: Container(
-                      color: Colors.red,
-                    ),
-                    onDismissed: (direction) {
-                      final snackBar = SnackBar(
-                        content: Text('Delete Alarm "${item.title}"'),
+                        background: Container(
+                          color: Colors.red,
+                        ),
+                        onDismissed: (direction) {
+                          final snackBar = SnackBar(
+                            content: Text('Delete Alarm "${item.title}"'),
+                          );
+                          Scaffold.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(snackBar);
+                          setState(() {
+                            alarmsProviderItem.removeAlarm(item.id);
+                          });
+                        },
                       );
-                      Scaffold.of(context)..hideCurrentSnackBar()..showSnackBar(snackBar);
-                      setState(() {
-                        alarmsProviderItem.removeAlarm(item.id);
-                      });
                     },
                   );
                 },
