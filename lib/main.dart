@@ -53,7 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
         List<YAlarms> localAlarms = alarmsProviderItem.alarms;
         if (localAlarms.length != 0) {
           allWidgetsAlarms = [];
+          int i = 0;
           localAlarms.forEach((item) {
+            int closureIndex = i;
             if (item == null) {
               allWidgetsAlarms = [];
               return;
@@ -90,6 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     onDismissed: (direction) {
                       final snackBar = SnackBar(
                         content: Text('Delete Alarm "${item.title}"'),
+                        action: SnackBarAction(
+                          label: 'Undo',
+                          onPressed: () {
+                            //
+                            alarmsProviderItem.addAlarm(item, closureIndex);
+                          },
+                        ),
                       );
                       Scaffold.of(context)
                         ..hideCurrentSnackBar()
@@ -97,11 +106,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() {
                         alarmsProviderItem.removeAlarm(item.id);
                       });
+                      print('asd');
                     },
                   );
                 },
               ),
             );
+            i++;
           });
         } else {
           allWidgetsAlarms = [];

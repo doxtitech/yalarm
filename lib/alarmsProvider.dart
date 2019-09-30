@@ -8,7 +8,7 @@ class AlarmsProvider with ChangeNotifier {
   List jSonAlarms = [];
   SharedPreferences prefs;
 
-  void addAlarm(YAlarms alarm) {
+  void addAlarm(YAlarms alarm, [int index]) {
     if (alarms == null) {
       alarms = [];
     }
@@ -20,8 +20,11 @@ class AlarmsProvider with ChangeNotifier {
     }
     int lastID = alarms.length != 0 ? alarms[alarms.length - 1].id : 0;
     alarm.id = alarms.length != 0 ? lastID + 1 : 1;
-
-    alarms.add(alarm);
+    if (index != null) {
+      alarms.insert(index, alarm);
+    } else {
+      alarms.add(alarm);
+    }
     notifyListeners();
     updateLocalStorage();
   }
