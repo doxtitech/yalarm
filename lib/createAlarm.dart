@@ -21,6 +21,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
   String _dynamicText = 'Add Alarm';
   TextEditingController alarmController;
   List<int> selectedDaysOfWeek = [0, 0, 0, 0, 0, 0, 0];
+  bool isEnabled;
   @override
   void initState() {
     // TODO: implement initState
@@ -34,6 +35,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
       alarmName = widget.item.title;
       alarmController = new TextEditingController(text: alarmName);
       alarmTime = widget.item.time;
+      isEnabled = widget.item.isEnabled;
       if (alarmTime != null) {
         selectedTime =
             '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
@@ -120,24 +122,51 @@ class _CreateAlarmState extends State<CreateAlarm> {
                 decoration: InputDecoration(hintText: 'Enter a alarm Name'),
                 controller: alarmController,
               ),
+              Row(
+                children: <Widget>[
+                  Switch(
+                    value: isEnabled != true ? false : true,
+                    onChanged: (newVal) {
+                      if (widget.item != null) {
+                        YAlarms newAlarm = widget.item;
+                        newAlarm.isEnabled = newVal;
+                        alarmsProviderItemLink.updateAlarm(
+                            widget.item, newAlarm);
+                      }
+                      setState(() {
+                        isEnabled = newVal;
+                      });
+                    },
+                  ),
+                  Text('Alarm ${isEnabled == true ? 'Enabled' : 'Disabled'}')
+                ],
+              ),
+              Row(children: [
+                new Switch(
+                  value: onlyOnce,
+                  onChanged: (val) {
+                    setState(() {
+                      onlyOnce = !onlyOnce;
+                    });
+                    //
+                  },
+                ),
+                Text('Run Only once')
+              ]),
               Row(children: [
                 FlatButton(
                   color: Colors.blue,
                   onPressed: () {
                     DatePicker.showTimePicker(context, showTitleActions: true,
                         onChanged: (date) {
-                      
                       setState(() {
                         alarmTime = date;
                         if (alarmTime != null) {
                           selectedTime =
                               '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
                         }
-
                       });
-                    }, onConfirm: (date) {
-                      
-                    }, currentTime: DateTime.now());
+                    }, onConfirm: (date) {}, currentTime: DateTime.now());
                   },
                   child: Text(
                     'Select a time',
@@ -154,18 +183,6 @@ class _CreateAlarmState extends State<CreateAlarm> {
               ]),
               // custom day selector here
 
-              Row(children: [
-                new Switch(
-                  value: onlyOnce,
-                  onChanged: (val) {
-                    setState(() {
-                      onlyOnce = !onlyOnce;
-                    });
-                    //
-                  },
-                ),
-                Text('Run Only once')
-              ]),
               onlyOnce == false
                   ? YADayPicker(
                       selectedDays: selectedDaysOfWeek,
@@ -194,6 +211,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   newAlarm.time = alarmTime;
                   newAlarm.runOnlyOnce = onlyOnce;
                   newAlarm.daySelector = selectedDaysOfWeek;
+                  newAlarm.isEnabled = isEnabled;
                   if (widget.item != null) {
                     YAlarms oldAlarm = widget.item;
                     Provider.of<AlarmsProvider>(context, listen: false)
