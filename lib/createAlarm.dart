@@ -126,8 +126,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   onPressed: () {
                     DatePicker.showTimePicker(context, showTitleActions: true,
                         onChanged: (date) {
-                      print('change ${date.hour} in time zone ' +
-                          date.timeZoneOffset.inHours.toString());
+                      
                       setState(() {
                         alarmTime = date;
                         if (alarmTime != null) {
@@ -135,10 +134,9 @@ class _CreateAlarmState extends State<CreateAlarm> {
                               '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
                         }
 
-                        // print('Time is ${alarmTime.hour}');
                       });
                     }, onConfirm: (date) {
-                      print('confirm $date');
+                      
                     }, currentTime: DateTime.now());
                   },
                   child: Text(

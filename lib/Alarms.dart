@@ -4,4 +4,5 @@ class YAlarms {
   List<int> daySelector;
   DateTime time;
   bool runOnlyOnce;
+  bool isEnabled;
 }

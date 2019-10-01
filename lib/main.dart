@@ -74,9 +74,33 @@ class _MyHomePageState extends State<MyHomePage> {
                         decoration: BoxDecoration(
                             border:
                                 Border(bottom: BorderSide(color: Colors.grey))),
-                        child: Text(
-                          item.title,
-                          style: TextStyle(fontSize: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              item.title,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Container(
+                              child: Switch(
+                                value: item.isEnabled == true,
+                                onChanged: (bool newValue) {
+                                  List<YAlarms> tempYAList =
+                                      alarmsProviderItem.alarms;
+                                  tempYAList = tempYAList.map((localItem) {
+                                    YAlarms tempItem = localItem;
+                                    if (localItem.id == item.id) {
+                                      tempItem.isEnabled = newValue;
+                                    }
+                                    return tempItem;
+                                  }).toList();
+                                  //
+                                  alarmsProviderItem
+                                      .updateAllAlarms(tempYAList);
+                                },
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       onTap: () {
@@ -106,7 +130,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() {
                         alarmsProviderItem.removeAlarm(item.id);
                       });
-                      print('asd');
                     },
                   );
                 },

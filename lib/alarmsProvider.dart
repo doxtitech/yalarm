@@ -45,6 +45,12 @@ class AlarmsProvider with ChangeNotifier {
     updateLocalStorage();
   }
 
+  void updateAllAlarms(newAlarms) {
+    alarms = newAlarms;
+    notifyListeners();
+    updateLocalStorage();
+  }
+
   void removeAlarm(int alarmID) {
     YAlarms alarmToRemove;
     alarms.forEach((item) {
@@ -69,11 +75,11 @@ class AlarmsProvider with ChangeNotifier {
         'daySelector': item.daySelector.toString(),
         'time': item.time.toString(),
         'runOnlyOnce': item.runOnlyOnce.toString(),
+        'isEnabled': item.isEnabled.toString(),
       };
       jSonAlarms.add(customJson);
     });
     tempSave = jsonEncode(jSonAlarms);
-    print(jsonEncode(tempSave));
     prefs.setString('allAlarms', tempSave);
     notifyListeners();
   }
@@ -90,6 +96,7 @@ class AlarmsProvider with ChangeNotifier {
         tempAlarm.id = item['id'];
         tempAlarm.title = item['title'];
         tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
+        tempAlarm.isEnabled = item['isEnabled'] == 'true';
         List<dynamic> tempDaySelectorPrequel = jsonDecode(item['daySelector']);
         List<int> tempDaySelector = tempDaySelectorPrequel.map((item) {
           return item is int ? item : int.parse(item);
