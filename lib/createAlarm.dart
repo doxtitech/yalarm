@@ -54,6 +54,49 @@ class _CreateAlarmState extends State<CreateAlarm> {
     selectedDaysOfWeek = widgetDays;
   }
 
+  Widget alertDialogContent() {
+    return Container(
+      height: 300,
+      width: 300,
+      child: Column(
+        children: <Widget>[
+          TextField(
+            decoration: InputDecoration(hintText: 'Search Video Here..'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 50,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text('Youtube Video $index'),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showSearchPopUp() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: Text('Select a Video to play as alarm'),
+              content: alertDialogContent(),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Quit'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ]);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AlarmsProvider>(
@@ -181,6 +224,16 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   ),
                 )
               ]),
+              FlatButton(
+                color: Colors.blue,
+                onPressed: () {
+                  _showSearchPopUp();
+                },
+                child: Text(
+                  'Select a Video',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
               // custom day selector here
 
               onlyOnce == false
