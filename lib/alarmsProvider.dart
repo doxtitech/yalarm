@@ -38,6 +38,7 @@ class AlarmsProvider with ChangeNotifier {
         alarms[i].daySelector = newAlarm.daySelector;
         alarms[i].time = newAlarm.time;
         alarms[i].runOnlyOnce = newAlarm.runOnlyOnce;
+        alarms[i].youtubeSource = newAlarm.youtubeSource;
       }
       i++;
     });
@@ -76,6 +77,7 @@ class AlarmsProvider with ChangeNotifier {
         'time': item.time.toString(),
         'runOnlyOnce': item.runOnlyOnce.toString(),
         'isEnabled': item.isEnabled.toString(),
+        'youtubeSource': item.youtubeSource.toString(),
       };
       jSonAlarms.add(customJson);
     });
@@ -97,6 +99,7 @@ class AlarmsProvider with ChangeNotifier {
         tempAlarm.title = item['title'];
         tempAlarm.runOnlyOnce = item['runOnlyOnce'] == 'true';
         tempAlarm.isEnabled = item['isEnabled'] == 'true';
+        tempAlarm.youtubeSource = item['youtubeSource'];
         List<dynamic> tempDaySelectorPrequel = jsonDecode(item['daySelector']);
         List<int> tempDaySelector = tempDaySelectorPrequel.map((item) {
           return item is int ? item : int.parse(item);

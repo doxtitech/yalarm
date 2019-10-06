@@ -4,6 +4,10 @@ import 'package:yalarm/Alarms.dart';
 import 'alarmsProvider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'yAlarmDayPicker.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:youtube_player/youtube_player.dart';
 
 class CreateAlarm extends StatefulWidget {
   YAlarms item;
@@ -22,6 +26,8 @@ class _CreateAlarmState extends State<CreateAlarm> {
   TextEditingController alarmController;
   List<int> selectedDaysOfWeek = [0, 0, 0, 0, 0, 0, 0];
   bool isEnabled;
+  String youtubeSource;
+  StreamSubscription _intentDataStreamSubscription;
   @override
   void initState() {
     // TODO: implement initState
@@ -36,6 +42,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
       alarmController = new TextEditingController(text: alarmName);
       alarmTime = widget.item.time;
       isEnabled = widget.item.isEnabled;
+      youtubeSource = widget.item.youtubeSource;
       if (alarmTime != null) {
         selectedTime =
             '${alarmTime.hour}:${alarmTime.minute}:${alarmTime.second}';
@@ -48,53 +55,28 @@ class _CreateAlarmState extends State<CreateAlarm> {
     if (widget.item != null) {
       _dynamicText = 'Update Alarm';
     }
+
+    _intentDataStreamSubscription =
+        ReceiveSharingIntent.getTextStream().listen((String value) {
+      List<String> tempListSource = value.split('/');
+      youtubeSource = tempListSource[tempListSource.length - 1];
+      setState(() {
+        //just rebuild
+      });
+    }, onError: (err) {
+      print('error: $err');
+    });
   }
 
   List<int> getDays(widgetDays) {
     selectedDaysOfWeek = widgetDays;
   }
 
-  Widget alertDialogContent() {
-    return Container(
-      height: 300,
-      width: 300,
-      child: Column(
-        children: <Widget>[
-          TextField(
-            decoration: InputDecoration(hintText: 'Search Video Here..'),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 50,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text('Youtube Video $index'),
-                );
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  void _showSearchPopUp() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-              title: Text('Select a Video to play as alarm'),
-              content: alertDialogContent(),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Quit'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ]);
-        });
+  void _goToYoutube() async {
+    String youtubePath = 'https://www.youtube.com';
+    if (await canLaunch(youtubePath)) {
+      await launch(youtubePath);
+    }
   }
 
   @override
@@ -227,7 +209,8 @@ class _CreateAlarmState extends State<CreateAlarm> {
               FlatButton(
                 color: Colors.blue,
                 onPressed: () {
-                  _showSearchPopUp();
+                  youtubeSource = null;
+                  _goToYoutube();
                 },
                 child: Text(
                   'Select a Video',
@@ -242,6 +225,14 @@ class _CreateAlarmState extends State<CreateAlarm> {
                       getDayPickerDays: getDays,
                     )
                   : Container(),
+              youtubeSource != null
+                  ? YoutubePlayer(
+                      context: context,
+                      source: youtubeSource,
+                      quality: YoutubeQuality.HD,
+                      autoPlay: false,
+                    )
+                  : Container()
             ],
           ),
         ),
@@ -265,6 +256,7 @@ class _CreateAlarmState extends State<CreateAlarm> {
                   newAlarm.runOnlyOnce = onlyOnce;
                   newAlarm.daySelector = selectedDaysOfWeek;
                   newAlarm.isEnabled = isEnabled;
+                  newAlarm.youtubeSource = youtubeSource;
                   if (widget.item != null) {
                     YAlarms oldAlarm = widget.item;
                     Provider.of<AlarmsProvider>(context, listen: false)

@@ -5,4 +5,5 @@ class YAlarms {
   DateTime time;
   bool runOnlyOnce;
   bool isEnabled;
+  String youtubeSource;
 }
